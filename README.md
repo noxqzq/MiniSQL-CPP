@@ -1,4 +1,4 @@
-# 🧭 Project Roadmap: Simple SQL Clone in C++
+# Project Roadmap: Simple SQL Clone in C++
 
 ## Phase 1: Core Design and Architecture
 
@@ -96,7 +96,7 @@ Each executor interacts with the **File I/O layer** and **TableManager** to perf
 
 ---
 
-## 🧩 Example CLI Session
+## Example CLI Session
 
 Below is an example of how the program might look when running in the terminal:
 ```
