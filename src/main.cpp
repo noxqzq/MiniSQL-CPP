@@ -544,6 +544,31 @@ private:
         std::cout << "Deleted " << deleted << " row(s) from \"" // print summary
                   << tableName << "\".\n";
     }
+    // ALTER TABLE name ADD/DROP columnName
+    void alterTable(const std::string &cmdRaw) {
+        std::string cmd = stripTrailingSemicolon(cmdRaw);
+        std::string tableName = extractTableNameAfter(cmd, "TABLE");
+        if (tableName.empty()) {
+            std::cout << "Syntax error: missing table name in ALTER. \n";
+            return;
+        }
+        size_t addPos = findNoCase(cmd, "ADD");
+        size_t dropPos = findNoCase(cmd, "DROP");
+
+        if (addPos != std::string::npos && dropPos != std::string::npos) {
+            std::cout << "Syntax error: cannot use both ADD and DROP in one command.\n";
+            return;
+        }
+
+        if (addPos == std::string::npos && dropPos == std::string::npos) {
+            std::cout << "Syntax error: expected ADD or DROP after table name.\n";
+            return;
+        }
+
+        if (addPos != std::string::npos) {
+            std::string colName;
+        }
+    }
 
     // SHOW TABLE name (pretty prints header + rows)
     void showTable(const std::string &cmdRaw) {
@@ -672,6 +697,8 @@ public:
                 updateTable(input);                             // handle UPDATE
             } else if (startsWithNoCase(input, "DELETE FROM")) {
                 deleteFromTable(input);                         // handle DELETE
+            } else if (startsWithNoCase(input, "ALTER TABLE")) {
+                alterTable(input);
             } else if (startsWithNoCase(input, "SHOW TABLE")) {
                 showTable(input);                               // handle SHOW TABLE
             } else if (startsWithNoCase(input, "SHOW PATH")) {
