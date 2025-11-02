@@ -552,6 +552,13 @@ private:
             std::cout << "Syntax error: missing table name in ALTER. \n";
             return;
         }
+
+        std::vector<std::vector<std::string>> rows = loadTable(tableName);
+        
+        if (rows.empty()) {
+            std::cout << "Table \"" << tableName << "\" not found or empty.\n";
+            return;
+        }
         size_t addPos = findNoCase(cmd, "ADD");
         size_t dropPos = findNoCase(cmd, "DROP");
 
@@ -565,10 +572,68 @@ private:
             return;
         }
 
+        std::string colName;
+
         if (addPos != std::string::npos) {
-            std::string colName;
+            std::string colName = trim(cmd.substr(addPos + 3));
+            if (colName.empty()) {
+                std::cout << "Syntax error: missing column name for ADD.\n";
+                return;
+            }
+
+            std::string newCol = stripTrailingSemicolon(colName);
+
+            const std::vector<std::string> &header = rows[0];
+            for (const auto &col : header) {
+                if (col == newCol) {
+                    std::cout << "Column \"" << newCol << "\" already exists.\n";
+                    return;
+                }
+            }
+
+            for (size_t r = 0;r < rows.size(); ++r) {
+                if (r == 0) 
+                    rows[r].push_back(newCol);
+                else
+                    rows[r].push_back("");
+            }
+
+            saveTable(tableName, rows);
+            std::cout << "Added column \"" << newCol << "\" to table \"" << tableName << "\".\n";
         }
+        else if (dropPos != std::string::npos) {
+            std::string colName = trim(cmd.substr(dropPos + 4));
+            if (colName.empty()) {
+                std::cout << "Syntax error: mssing column name for DROP.\n";
+                return;
+            }
+
+            std::string dropCol = stripTrailingSemicolon(colName);
+            std::vector<std::string> &header = rows[0];
+
+            size_t colIndex = static_cast<size_t>(-1);
+            for (size_t i = 0; i < header.size(); ++i) {
+                if (header[i] == dropCol) {
+                    colIndex = i;
+                    break;
+                }
+            }
+
+            if (colIndex == static_cast<size_t>(-1)) {
+                std::cout << "Unknown column: " << dropCol << "\n";
+                return;
+            }
+
+            // Remove column from all rows
+            for (auto &row : rows) {
+                if (colIndex < row.size())
+                    row.erase(row.begin() + colIndex);
+            }
+
+            saveTable(tableName, rows);
+            std::cout << "Dropped column \"" << dropCol << "\" from table \"" << tableName << "\".\n";
     }
+}
 
     // SHOW TABLE name (pretty prints header + rows)
     void showTable(const std::string &cmdRaw) {
@@ -663,7 +728,7 @@ public:
     // Main REPL loop
     void run() {
         std::cout << "Welcome to MiniSQL-CPP!\n";               // greeting
-        std::cout << "Commands end with ';'. Supported: CREATE, INSERT, UPDATE, DELETE, SHOW, SHOW PATH, EXIT\n\n"; // help
+        std::cout << "Commands end with ';'. Supported: CREATE, INSERT, UPDATE, DELETE, SHOW, SHOW PATH, EXIT, ALTER\n\n"; // help
 
         std::string accum;                                      // buffer for multi-line statements
         while (true) {                                          // REPL loop
