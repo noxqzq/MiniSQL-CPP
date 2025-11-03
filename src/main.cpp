@@ -9,6 +9,7 @@
 //   INSERT INTO <name> VALUES (v1, v2, ...);
 //   UPDATE <name> SET col=val, col2="val2" WHERE key="something";
 //   DELETE FROM <name> WHERE col = value;
+//   ALTER TABLE <name> ADD/DROP <column name>;
 //   SHOW TABLE <name>;
 //   SHOW PATH;    // prints CWD and resolved data directory
 //   EXIT;
@@ -505,6 +506,7 @@ private:
         }
 
         std::pair<std::string, std::string> whereKV = parseWhereEquals(cmd); // parse WHERE
+
         if (whereKV.first.empty()) {                            // if WHERE not provided
             std::cout << "Refusing to DELETE without a WHERE clause.\n"; // safety guard
             return;                                             // stop
@@ -544,18 +546,64 @@ private:
         std::cout << "Deleted " << deleted << " row(s) from \"" // print summary
                   << tableName << "\".\n";
     }
-    // ALTER TABLE name ADD/DROP columnName
-    void alterTable(const std::string &cmdRaw) {
+
+    //SELECT <column name> FROM <name> WHERE col = val
+    void selectTable(const std::string &cmdRaw) {
         std::string cmd = stripTrailingSemicolon(cmdRaw);
-        std::string tableName = extractTableNameAfter(cmd, "TABLE");
+        std::string tableName = extractTableNameAfter(cmd, "FROM");
+
         if (tableName.empty()) {
-            std::cout << "Syntax error: missing table name in ALTER. \n";
+            std::cout << "Syntax error: missing table name in DROP";
             return;
         }
 
         std::vector<std::vector<std::string>> rows = loadTable(tableName);
-        
+
         if (rows.empty()) {
+            std::cout << "Table \"" << tableName << "\" not found or empty.\n";
+            return;
+        }
+
+        
+    }
+    
+    // DROP TABLE <name>
+    void dropTable(const std::string &cmdRaw) {
+        std::string cmd = stripTrailingSemicolon(cmdRaw);
+        std::string tableName = extractTableNameAfter(cmd, "TABLE");
+
+        if (tableName.empty()) {
+            std::cout << "Syntax error: missing table name in DROP";
+            return;
+        }
+
+        std::vector<std::vector<std::string>> rows = loadTable(tableName);
+
+        if (rows.empty()) {
+            std::cout << "Table \"" << tableName << "\" not found.\n";
+            return;
+        }
+
+        fs::path p = dataRoot / (tableName + ".csv");
+
+        if (fs::remove(p)) {
+            std::cout << "File '" << p << "' deleted successfully." << std::endl;
+        } else {
+            std::cout << "File '" << p << "' not found or could not be deleted." << std::endl;
+        }
+    }
+    // ALTER TABLE name ADD/DROP columnName
+    void alterTable(const std::string &cmdRaw) {                
+        std::string cmd = stripTrailingSemicolon(cmdRaw);       // clean trailing semi colon
+        std::string tableName = extractTableNameAfter(cmd, "TABLE"); // extract table name
+        if (tableName.empty()) {                                // if table name is missing 
+            std::cout << "Syntax error: missing table name in ALTER. \n"; // print out error message
+            return;                                             // stop
+        }
+
+        std::vector<std::vector<std::string>> rows = loadTable(tableName); // load table
+        
+        if (rows.empty()) {                                     //
             std::cout << "Table \"" << tableName << "\" not found or empty.\n";
             return;
         }
@@ -768,6 +816,8 @@ public:
                 showTable(input);                               // handle SHOW TABLE
             } else if (startsWithNoCase(input, "SHOW PATH")) {
                 showPath();                                     // handle SHOW PATH
+            } else if (startsWithNoCase(input, "DROP TABLE")) {
+                dropTable(input);                               // handle DROP TABLE
             } else {
                 std::cout << "Unknown command.\n";              // unknown input
             }
