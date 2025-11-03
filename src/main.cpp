@@ -506,13 +506,31 @@ private:
         }
 
         std::pair<std::string, std::string> whereKV = parseWhereEquals(cmd); // parse WHERE
+        std::vector<std::vector<std::string>> rows = loadTable(tableName); // load table
 
-        if (whereKV.first.empty()) {                            // if WHERE not provided
-            std::cout << "Refusing to DELETE without a WHERE clause.\n"; // safety guard
-            return;                                             // stop
+        if (whereKV.first.empty()) {
+            // No WHERE → ask user before deleting all rows
+            char choice;
+            std::cout << "WARNING: This will delete ALL records from table \"" 
+                    << tableName << "\"!\n";
+            std::cout << "Are you sure you want to continue? (Y/N): ";
+            std::cin >> choice;
+            std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // <— flush leftover newline
+
+
+            if (choice == 'y' || choice == 'Y') {
+                // Keep only header (first row)
+                std::vector<std::vector<std::string>> newRows;
+                newRows.push_back(rows[0]); // keep header
+
+                saveTable(tableName, newRows);
+                std::cout << "All records deleted from \"" << tableName << "\".\n";
+            } else {
+                std::cout << "Operation cancelled.\n";
+            }
+            return;
         }
 
-        std::vector<std::vector<std::string>> rows = loadTable(tableName); // load table
         if (rows.empty()) {                                     // if table missing
             std::cout << "Table \"" << tableName << "\" not found or empty.\n"; // message
             return;                                             // stop
@@ -563,8 +581,6 @@ private:
             std::cout << "Table \"" << tableName << "\" not found or empty.\n";
             return;
         }
-
-        
     }
     
     // DROP TABLE <name>
