@@ -169,12 +169,3 @@ sequenceDiagram
 - Support `IMPORT/EXPORT` CSV commands.
 
 ---
-
-## License
-MIT. Use it for learning, homework practice, or as a toy project in your portfolio.
-```
-
----
-
-**You’re all set.** Paste these files into a folder, build, and you’ll have the refactored MiniSQL with the requested `SELECT` output and a clean structure beginners can follow. Want me to zip this into a downloadable archive or add Windows/MSVC build notes?
-
