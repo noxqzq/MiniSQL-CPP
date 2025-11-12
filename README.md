@@ -99,10 +99,10 @@ You type commands  →  Mini parser decides which command it is  →  Command ha
 
 ### Main Parts (Files)
 - **`src/MiniSQL.cpp, .hpp`** — The boss. Runs the REPL and routes commands.
-- **`src/parser_utils.*`** — Finds table names, splits `SET a=1, b=2`, parses `WHERE col=val`, etc.
-- **`src/string_utils.*`** — Trimming, case-insensitive search, quote cleanup.
-- **`src/csv_utils.*`** — Reads and writes CSV files safely (handles `""` escaping).
-- **`src/table_print.*`** — Calculates column widths and prints the box table.
+- **`src/utils/parser_utils.*`** — Finds table names, splits `SET a=1, b=2`, parses `WHERE col=val`, etc.
+- **`src/utils/string_utils.*`** — Trimming, case-insensitive search, quote cleanup.
+- **`src/utils/csv_utils.*`** — Reads and writes CSV files safely (handles `""` escaping).
+- **`src/utils/table_print.*`** — Calculates column widths and prints the box table.
 - **`src/main.cpp`** — Starts the app.
 
 ### Data Flow (Mermaid)
