@@ -13,16 +13,6 @@
 
 ### Prerequisites
 - A C++17 compiler (GCC, Clang, or MSVC)
-- CMake 3.14+
-
-### Build (CMake)
-```bash
-mkdir build && cd build
-cmake ..
-cmake --build .
-./minisql   # macOS/Linux
-minisql.exe # Windows
-```
 
 ### Storage Location
 - By default: `./data` **next to the executable**.
