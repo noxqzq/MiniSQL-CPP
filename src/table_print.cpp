@@ -4,10 +4,15 @@
 
 namespace tp {
     std::vector<std::size_t> computeWidths(const std::vector<std::vector<std::string>>& rows) {
-        if (rows.empty()) return {};
+        if (rows.empty()) 
+            return {};
+
         std::vector<std::size_t> w(rows[0].size(), 0);
+        
         for (const auto &row : rows) {
-            for (std::size_t c=0;c<row.size();++c) if (row[c].size()>w[c]) w[c]=row[c].size();
+            for (std::size_t c=0;c<row.size();++c) 
+                if (row[c].size()>w[c]) 
+                    w[c]=row[c].size();
         }
         return w;
     }
@@ -20,7 +25,9 @@ namespace tp {
         std::cout << "\n";
     }
 
-    void printBorder(const std::vector<std::size_t>& widths) { printPlusDashes(widths); }
+    void printBorder(const std::vector<std::size_t>& widths) { 
+        printPlusDashes(widths); 
+    }
 
     void printRow(const std::vector<std::string>& row, const std::vector<std::size_t>& widths) {
         std::cout << "|";
