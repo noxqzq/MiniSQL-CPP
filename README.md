@@ -2,19 +2,6 @@
 
 **MiniSQL-CPP** is a beginner-friendly, single-binary project that acts like a tiny SQL engine over **CSV files**. You can create tables, insert/update/delete rows, alter columns, select data, and pretty‑print results — all from a simple REPL.
 
-> ✨ New: `SELECT` now prints in a box-table format:
->
-> ```
-> +----+------+-----+
-> | id | name | age |
-> +----+------+-----+
-> |  1 | Bob  | 30  |
-> |  2 | Ana  | 25  |
-> +----+------+-----+
-> ```
-
----
-
 ## Why this project?
 - **Teaches fundamentals**: parsing, file I/O, formatting, basic SQL-like grammar.
 - **No DB server**: just CSV files. Easy to run anywhere.
@@ -169,12 +156,3 @@ sequenceDiagram
 - Support `IMPORT/EXPORT` CSV commands.
 
 ---
-
-## License
-MIT. Use it for learning, homework practice, or as a toy project in your portfolio.
-```
-
----
-
-**You’re all set.** Paste these files into a folder, build, and you’ll have the refactored MiniSQL with the requested `SELECT` output and a clean structure beginners can follow. Want me to zip this into a downloadable archive or add Windows/MSVC build notes?
-
